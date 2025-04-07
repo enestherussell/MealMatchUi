@@ -9,7 +9,7 @@ import kotlinx.coroutines.flow.update
 
 class RecipeRepository {
     private val _allRecipes = MutableStateFlow<List<Recipe>>(emptyList())
-    val allRecipes: StateFlow<List<Recipe>> = _allRecipes.asStateFlow()
+     val allRecipes: StateFlow<List<Recipe>> = _allRecipes.asStateFlow()
 
     private val _filteredRecipes = MutableStateFlow<List<Recipe>>(emptyList())
     val filteredRecipes: StateFlow<List<Recipe>> = _filteredRecipes.asStateFlow()
