@@ -21,7 +21,7 @@ class RecipeRepository {
     val favoriteRecipes: StateFlow<List<Recipe>> = _favoriteRecipes.asStateFlow()
 
     init {
-        _allRecipes.value = generateSampleRecipes()
+        _allRecipes.value = getRecipes()
         _filteredRecipes.value = _allRecipes.value
     }
 
@@ -88,90 +88,50 @@ class RecipeRepository {
         }
     }
 
-    private fun generateSampleRecipes(): List<Recipe> {
+    fun getRecipes(): List<Recipe> {
         return listOf(
             Recipe(
                 id = "1",
-                name = "Köfte",
+                name = "Mantı",
                 category = RecipeCategory.MEAT.name,
-                ingredients = listOf(
-                    "Kıyma",
-                    "Soğan",
-                    "Sarımsak",
-                    "Yumurta",
-                    "Ekmek içi"
-                ),
+                ingredients = listOf("Un", "Yumurta", "Kıyma", "Yoğurt", "Sarımsak"),
                 instructions = listOf(
-                    "Kıymayı geniş bir kaba alın",
-                    "Soğan ve sarımsakları rendeleyin",
-                    "Yumurta ve ekmek içini ekleyin",
-                    "Tüm malzemeleri iyice yoğurun",
-                    "Köfte şekli verip pişirin"
+                    "Hamur yoğrulur",
+                    "Açılır",
+                    "Kesilir",
+                    "Doldurulur",
+                    "Pişirilir"
                 ),
-                imageUrl = "https://example.com/kofte.jpg",
+                imageUrl = "https://example.com/manti.jpg",
                 isFavorite = false
             ),
             Recipe(
                 id = "2",
-                name = "Mercimek Çorbası",
-                category = RecipeCategory.VEGETABLE.name,
-                ingredients = listOf(
-                    "Kırmızı mercimek",
-                    "Soğan",
-                    "Havuç",
-                    "Patates",
-                    "Salça"
-                ),
+                name = "Karnıyarık",
+                category = RecipeCategory.MEAT.name,
+                ingredients = listOf("Patlıcan", "Kıyma", "Soğan", "Sarımsak", "Domates"),
                 instructions = listOf(
-                    "Mercimekleri yıkayın",
-                    "Sebzeleri doğrayın",
-                    "Tencereye alıp kavurun",
-                    "Su ekleyip pişirin",
-                    "Blenderdan geçirin"
+                    "Patlıcanlar kızartılır",
+                    "Kıyma hazırlanır",
+                    "Patlıcanlar doldurulur",
+                    "Fırında pişirilir"
                 ),
-                imageUrl = "https://example.com/mercimek.jpg",
+                imageUrl = "https://example.com/karniyarik.jpg",
                 isFavorite = false
             ),
             Recipe(
                 id = "3",
-                name = "Vegan Burger",
-                category = RecipeCategory.VEGAN.name,
-                ingredients = listOf(
-                    "Mantar",
-                    "Nohut",
-                    "Soğan",
-                    "Sarımsak",
-                    "Ekmek"
-                ),
-                instructions = listOf(
-                    "Mantarları doğrayın",
-                    "Nohutları ezin",
-                    "Malzemeleri karıştırın",
-                    "Burger şekli verin",
-                    "Pişirin"
-                ),
-                imageUrl = "https://example.com/vegan-burger.jpg",
-                isFavorite = false
-            ),
-            Recipe(
-                id = "4",
-                name = "Çikolatalı Kek",
+                name = "Baklava",
                 category = RecipeCategory.DESSERT.name,
-                ingredients = listOf(
-                    "Un",
-                    "Kakao",
-                    "Yumurta",
-                    "Süt",
-                    "Şeker"
-                ),
+                ingredients = listOf("Un", "Yağ", "Şeker", "Antep Fıstığı", "Şerbet"),
                 instructions = listOf(
-                    "Malzemeleri karıştırın",
-                    "Kek kalıbına dökün",
-                    "Fırında pişirin",
-                    "Soğutun",
-                    "Servis yapın"
+                    "Hamur açılır",
+                    "Katlar hazırlanır",
+                    "Fıstık serpilir",
+                    "Pişirilir",
+                    "Şerbet dökülür"
                 ),
-                imageUrl = "https://example.com/chocolate-cake.jpg",
+                imageUrl = "https://example.com/baklava.jpg",
                 isFavorite = false
             )
         )

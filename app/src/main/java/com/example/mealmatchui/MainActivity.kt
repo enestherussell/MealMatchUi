@@ -11,11 +11,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.mealmatchui.navigation.NavRoutes
-import com.example.mealmatchui.ui.screens.MainScreen
-import com.example.mealmatchui.ui.screens.RecipeDetailScreen
-import com.example.mealmatchui.ui.screens.SearchScreen
+import com.example.mealmatchui.ui.screens.*
 import com.example.mealmatchui.ui.theme.MealMatchTheme
 import com.example.mealmatchui.ui.viewmodel.RecipeViewModel
+import com.example.mealmatchui.ui.viewmodel.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -31,16 +30,33 @@ class MainActivity : ComponentActivity() {
 @Composable
 fun MealMatchApp() {
     val navController = rememberNavController()
-    val viewModel: RecipeViewModel = viewModel()
+    val recipeViewModel: RecipeViewModel = viewModel()
+    val userViewModel: UserViewModel = viewModel()
 
-    NavHost(navController = navController, startDestination = NavRoutes.Main.route) {
+    NavHost(navController = navController, startDestination = NavRoutes.Login.route) {
+        composable(NavRoutes.Login.route) {
+            LoginScreen(
+                onNavigateToRegister = { navController.navigate(NavRoutes.Register.route) },
+                onLoginSuccess = { navController.navigate(NavRoutes.Main.route) },
+                viewModel = userViewModel
+            )
+        }
+
+        composable(NavRoutes.Register.route) {
+            RegisterScreen(
+                onNavigateToLogin = { navController.navigate(NavRoutes.Login.route) },
+                onRegisterSuccess = { navController.navigate(NavRoutes.Main.route) },
+                viewModel = userViewModel
+            )
+        }
+
         composable(NavRoutes.Main.route) {
             MainScreen(
                 onSearchClick = { navController.navigate(NavRoutes.Search.route) },
                 onRecipeClick = { recipeId -> 
                     navController.navigate(NavRoutes.RecipeDetail.createRoute(recipeId))
                 },
-                viewModel = viewModel
+                viewModel = recipeViewModel
             )
         }
 
@@ -50,7 +66,7 @@ fun MealMatchApp() {
                 onRecipeClick = { recipeId -> 
                     navController.navigate(NavRoutes.RecipeDetail.createRoute(recipeId))
                 },
-                viewModel = viewModel
+                viewModel = recipeViewModel
             )
         }
 
@@ -62,7 +78,16 @@ fun MealMatchApp() {
             RecipeDetailScreen(
                 recipeId = recipeId,
                 onNavigateBack = { navController.popBackStack() },
-                onFavoriteClick = { viewModel.toggleFavorite(recipeId) }
+                onFavoriteClick = { recipeViewModel.toggleFavorite(recipeId) }
+            )
+        }
+
+        composable(NavRoutes.Favorites.route) {
+            FavoritesScreen(
+                onRecipeClick = { recipeId -> 
+                    navController.navigate(NavRoutes.RecipeDetail.createRoute(recipeId))
+                },
+                viewModel = recipeViewModel
             )
         }
     }

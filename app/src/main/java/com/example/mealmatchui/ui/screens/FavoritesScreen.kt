@@ -8,13 +8,12 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.mealmatchui.data.model.Recipe
 import com.example.mealmatchui.ui.components.RecipeCard
 import com.example.mealmatchui.ui.viewmodel.RecipeViewModel
 
 @Composable
 fun FavoritesScreen(
-    onRecipeClick: (Recipe) -> Unit,
+    onRecipeClick: (String) -> Unit,
     viewModel: RecipeViewModel = viewModel()
 ) {
     val favorites by viewModel.favoriteRecipes.collectAsState()
@@ -46,9 +45,10 @@ fun FavoritesScreen(
             ) {
                 items(favorites) { recipe ->
                     RecipeCard(
-                        recipe = recipe,
-                        onRecipeClick = { onRecipeClick(recipe) },
-                        onFavoriteClick = { viewModel.toggleFavorite(recipe) }
+                        recipeName = recipe.name,
+                        isFavorite = recipe.isFavorite,
+                        onFavoriteClick = { viewModel.toggleFavorite(recipe.id) },
+                        onClick = { onRecipeClick(recipe.id) }
                     )
                 }
             }

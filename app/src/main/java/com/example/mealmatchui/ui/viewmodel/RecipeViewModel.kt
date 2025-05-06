@@ -1,88 +1,109 @@
 package com.example.mealmatchui.ui.viewmodel
 
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope
 import com.example.mealmatchui.data.model.Recipe
 import com.example.mealmatchui.data.model.RecipeCategory
-import com.example.mealmatchui.data.repository.RecipeRepository
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.stateIn
-import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch
 
 class RecipeViewModel : ViewModel() {
-    private val repository = RecipeRepository()
-
-    // State
-    private val _selectedCategory = MutableStateFlow<RecipeCategory?>(RecipeCategory.ALL)
+    private val _selectedCategory = MutableStateFlow<RecipeCategory?>(null)
     val selectedCategory: StateFlow<RecipeCategory?> = _selectedCategory.asStateFlow()
 
-    private val _searchQuery = MutableStateFlow("")
-    val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
-
-    private val _selectedIngredients = MutableStateFlow<List<String>>(emptyList())
-    val selectedIngredients: StateFlow<List<String>> = _selectedIngredients.asStateFlow()
-
-    // Derived State
-    val recipes: StateFlow<List<Recipe>> = repository.allRecipes
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
+    private val _recipes = mutableStateOf(listOf(
+        Recipe(
+            id = "1",
+            name = "Mantı",
+            category = RecipeCategory.MEAT.name,
+            ingredients = listOf("Un", "Yumurta", "Kıyma", "Yoğurt", "Sarımsak"),
+            instructions = listOf(
+                "Hamur yoğrulur",
+                "Açılır",
+                "Kesilir",
+                "Doldurulur",
+                "Pişirilir"
+            ),
+            imageUrl = "https://example.com/manti.jpg",
+            isFavorite = false
+        ),
+        Recipe(
+            id = "2",
+            name = "Karnıyarık",
+            category = RecipeCategory.MEAT.name,
+            ingredients = listOf("Patlıcan", "Kıyma", "Soğan", "Sarımsak", "Domates"),
+            instructions = listOf(
+                "Patlıcanlar kızartılır",
+                "Kıyma hazırlanır",
+                "Patlıcanlar doldurulur",
+                "Fırında pişirilir"
+            ),
+            imageUrl = "https://example.com/karniyarik.jpg",
+            isFavorite = true
+        ),
+        Recipe(
+            id = "3",
+            name = "İskender",
+            category = RecipeCategory.MEAT.name,
+            ingredients = listOf("Döner", "Pide", "Domates Sosu", "Yoğurt", "Tereyağı"),
+            instructions = listOf(
+                "Döner dilimlenir",
+                "Pide doğranır",
+                "Sos hazırlanır",
+                "Servis yapılır"
+            ),
+            imageUrl = "https://example.com/iskender.jpg",
+            isFavorite = false
         )
+    ))
 
-    val filteredRecipes: StateFlow<List<Recipe>> = repository.filteredRecipes
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _filteredRecipes = MutableStateFlow<List<Recipe>>(emptyList())
+    val filteredRecipes: StateFlow<List<Recipe>> = _filteredRecipes.asStateFlow()
 
-    val searchResults: StateFlow<List<Recipe>> = repository.searchResults
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _searchResults = MutableStateFlow<List<Recipe>>(emptyList())
+    val searchResults: StateFlow<List<Recipe>> = _searchResults.asStateFlow()
 
-    val favoriteRecipes: StateFlow<List<Recipe>> = repository.favoriteRecipes
-        .stateIn(
-            scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyList()
-        )
+    private val _favoriteRecipes = MutableStateFlow<List<Recipe>>(emptyList())
+    val favoriteRecipes: StateFlow<List<Recipe>> = _favoriteRecipes.asStateFlow()
 
-    // Actions
+    init {
+        updateFilteredRecipes()
+        updateFavoriteRecipes()
+    }
+
     fun setCategory(category: RecipeCategory?) {
-        _selectedCategory.update { category }
-        repository.filterByCategory(category)
+        _selectedCategory.value = category
+        updateFilteredRecipes()
+    }
+
+    private fun updateFilteredRecipes() {
+        _filteredRecipes.value = _recipes.value.filter { recipe ->
+            _selectedCategory.value?.let { category ->
+                recipe.category == category.name
+            } ?: true
+        }
     }
 
     fun updateSearchQuery(query: String) {
-        _searchQuery.update { query }
-        repository.searchRecipes(query, _selectedIngredients.value)
-    }
-
-    fun addIngredient(ingredient: String) {
-        _selectedIngredients.update { current ->
-            if (current.contains(ingredient)) current else current + ingredient
+        _searchResults.value = _recipes.value.filter { recipe ->
+            recipe.name.contains(query, ignoreCase = true) ||
+            recipe.ingredients.any { it.contains(query, ignoreCase = true) }
         }
-        repository.searchRecipes(_searchQuery.value, _selectedIngredients.value)
-    }
-
-    fun removeIngredient(ingredient: String) {
-        _selectedIngredients.update { current ->
-            current.filter { it != ingredient }
-        }
-        repository.searchRecipes(_searchQuery.value, _selectedIngredients.value)
     }
 
     fun toggleFavorite(recipeId: String) {
-        viewModelScope.launch {
-            repository.toggleFavorite(recipeId)
+        _recipes.value = _recipes.value.map { recipe ->
+            if (recipe.id == recipeId) recipe.copy(isFavorite = !recipe.isFavorite)
+            else recipe
         }
+        updateFilteredRecipes()
+        updateFavoriteRecipes()
+    }
+
+    private fun updateFavoriteRecipes() {
+        _favoriteRecipes.value = _recipes.value.filter { it.isFavorite }
     }
 } 
