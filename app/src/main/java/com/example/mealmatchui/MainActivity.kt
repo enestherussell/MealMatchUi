@@ -56,6 +56,7 @@ fun MealMatchApp() {
                 onRecipeClick = { recipeId -> 
                     navController.navigate(NavRoutes.RecipeDetail.createRoute(recipeId))
                 },
+                onCameraClick = { navController.navigate(NavRoutes.Camera.route) },
                 viewModel = recipeViewModel
             )
         }
@@ -88,6 +89,26 @@ fun MealMatchApp() {
                     navController.navigate(NavRoutes.RecipeDetail.createRoute(recipeId))
                 },
                 viewModel = recipeViewModel
+            )
+        }
+
+        composable(NavRoutes.Camera.route) {
+            CameraScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onCaptureSuccess = { recipeId ->
+                    navController.navigate(NavRoutes.RecipeResult.createRoute(recipeId))
+                }
+            )
+        }
+
+        composable(
+            route = NavRoutes.RecipeResult.route,
+            arguments = listOf(navArgument("recipeId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val recipeId = backStackEntry.arguments?.getString("recipeId") ?: return@composable
+            RecipeResultScreen(
+                recipeId = recipeId,
+                onNavigateBack = { navController.popBackStack() }
             )
         }
     }

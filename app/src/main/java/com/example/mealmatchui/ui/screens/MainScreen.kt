@@ -5,6 +5,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Camera
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
@@ -24,6 +25,7 @@ import com.example.mealmatchui.ui.viewmodel.RecipeViewModel
 fun MainScreen(
     onSearchClick: () -> Unit,
     onRecipeClick: (String) -> Unit,
+    onCameraClick: () -> Unit,
     viewModel: RecipeViewModel = viewModel()
 ) {
     val selectedCategory by viewModel.selectedCategory.collectAsState()
@@ -33,10 +35,14 @@ fun MainScreen(
         topBar = {
             TopAppBar(
                 title = { Text("MealMatch") },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary,
-                    titleContentColor = MaterialTheme.colorScheme.onPrimary
-                )
+                actions = {
+                    IconButton(onClick = onSearchClick) {
+                        Icon(Icons.Default.Search, contentDescription = "Ara")
+                    }
+                    IconButton(onClick = onCameraClick) {
+                        Icon(Icons.Default.Camera, contentDescription = "Fotoğraf Çek")
+                    }
+                }
             )
         }
     ) { paddingValues ->
