@@ -13,3 +13,15 @@
 .externalNativeBuild
 .cxx
 local.properties
+*.log
+*.apk
+*.aab
+*.ap_
+*.dex
+*.class
+bin/
+gen/
+out/
+.navigation/
+output.json
+*.hprof
